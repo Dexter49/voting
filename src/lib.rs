@@ -1,8 +1,9 @@
 //! # A Concordium V1 smart contract
-use concordium_std::*;
+use concordium_std::{*, collections::BTreeMap};
 use core::fmt::Debug;
 
 type VotingOption = String;
+type VotingIndex = u32;
 
 /// Your smart contract state.
 #[derive(Serialize, SchemaType)]
@@ -10,6 +11,30 @@ pub struct State {
     pub description: String,
     pub options : Vec<VotingOption>,
     pub end_time: Timestamp,
+    pub ballots: BTreeMap<AccountAddress, VotingIndex>,
+}
+
+#[derive(Serialize, SchemaType)]
+pub struct InitParameter {
+    pub description: String,
+    pub options: Vec<VotingOption>,
+    pub end_time: Timestamp,
+}
+
+/// Init function that creates a new smart contract.
+#[init(contract = "voting", parameter = "InitParameter")]
+fn init(ctx: &InitContext, _state_builder: &mut StateBuilder) -> InitResult<State> {
+    
+    let parameter: InitParameter = ctx.parameter_cursor().get()?;
+
+    let state: State = State {
+        description: parameter.description,
+        options:parameter.options,
+        end_time: parameter.end_time,
+        ballots: BTreeMap::new(),
+    };
+
+    Ok(state)
 }
 
 /// Your smart contract errors.
@@ -22,35 +47,17 @@ pub enum Error {
     YourError,
 }
 
-/// Init function that creates a new smart contract.
-#[init(contract = "voting")]
-fn init(_ctx: &InitContext, _state_builder: &mut StateBuilder) -> InitResult<State> {
-    // Your code
-
-    Ok(State {})
-}
-
-pub type MyInputType = bool;
-
-/// Receive function. The input parameter is the boolean variable `throw_error`.
-///  If `throw_error == true`, the receive function will throw a custom error.
-///  If `throw_error == false`, the receive function executes successfully.
 #[receive(
     contract = "voting",
-    name = "receive",
-    parameter = "MyInputType",
+    name = "vote",
+    parameter = "VotingOption",
     error = "Error",
     mutable
 )]
-fn receive(ctx: &ReceiveContext, _host: &mut Host<State>) -> Result<(), Error> {
-    // Your code
+fn vote(ctx: &ReceiveContext, _ost: &mut Host<State>) -> Result<(), Error> {
+    
+    if ctx.metadata().slot_time()
 
-    let throw_error = ctx.parameter_cursor().get()?; // Returns Error::ParseError on failure
-    if throw_error {
-        Err(Error::YourError)
-    } else {
-        Ok(())
-    }
 }
 
 /// View function that returns the content of the state.
