@@ -1,5 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-
 //! # A Concordium V1 smart contract
 use concordium_std::*;
 use core::fmt::Debug;
@@ -7,7 +5,7 @@ use core::fmt::Debug;
 /// Your smart contract state.
 #[derive(Serialize, SchemaType)]
 pub struct State {
-    // Your state
+    
 }
 
 /// Your smart contract errors.
