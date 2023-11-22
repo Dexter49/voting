@@ -44,7 +44,7 @@ pub enum Error {
     #[from(ParseError)]
     ParseParams,
     /// Your error
-    YourError,
+    VotingFinished,
 }
 
 #[receive(
@@ -54,10 +54,13 @@ pub enum Error {
     error = "Error",
     mutable
 )]
-fn vote(ctx: &ReceiveContext, _ost: &mut Host<State>) -> Result<(), Error> {
+fn vote(ctx: &ReceiveContext, host: &mut Host<State>) -> Result<(), Error> {
     
-    if ctx.metadata().slot_time()
+    if ctx.metadata().slot_time() > host.state().end_time {
+        return Err(Error::VotingFinished);
+    }
 
+    Ok(())
 }
 
 /// View function that returns the content of the state.
