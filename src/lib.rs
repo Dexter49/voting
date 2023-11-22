@@ -2,10 +2,14 @@
 use concordium_std::*;
 use core::fmt::Debug;
 
+type VotingOption = String;
+
 /// Your smart contract state.
 #[derive(Serialize, SchemaType)]
 pub struct State {
-    
+    pub description: String,
+    pub options : Vec<VotingOption>,
+    pub end_time: Timestamp,
 }
 
 /// Your smart contract errors.
