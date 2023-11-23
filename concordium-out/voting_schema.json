@@ -1,0 +1,15 @@
+{
+  "contractName": "voting",
+  "entrypoints": {
+    "view": {
+      "returnValue": "FAABAAAABQAAAHRhbGx5EgIWAgQ="
+    },
+    "vote": {
+      "error": "FQQAAAALAAAAUGFyc2VQYXJhbXMCDgAAAFZvdGluZ0ZpbmlzaGVkAg0AAABDb250cmFjdFZvdGVyAhMAAABJbnZhbGlkVm90aW5nT3B0aW9uAg==",
+      "parameter": "FgI="
+    }
+  },
+  "init": {
+    "parameter": "FAADAAAACwAAAGRlc2NyaXB0aW9uFgIHAAAAb3B0aW9ucxACFgIIAAAAZW5kX3RpbWUN"
+  }
+}
