@@ -45,6 +45,8 @@ pub enum Error {
     ParseParams,
     /// Your error
     VotingFinished,
+    ContractVoter,
+    InvalidVotingOption,
 }
 
 #[receive(
@@ -59,6 +61,18 @@ fn vote(ctx: &ReceiveContext, host: &mut Host<State>) -> Result<(), Error> {
     if ctx.metadata().slot_time() > host.state().end_time {
         return Err(Error::VotingFinished);
     }
+
+    let acc: AccountAddress = match ctx.sender() {
+        Address::Account(acc: AccountAddress) => acc,
+        Address::Contract(_) => return Err(Error::ContractVoter),
+    };
+
+    let new_vote: VotingOption = ctx.parameter_cursor().get()?;
+
+    let voting_index = match host.state().options.iter().position(|o| *o == new_vote) {
+        Some(position) => position as u32,
+        None => return Err(Error::InvalidVotingOption),
+    };
 
     Ok(())
 }
