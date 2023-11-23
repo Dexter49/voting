@@ -69,10 +69,14 @@ fn vote(ctx: &ReceiveContext, host: &mut Host<State>) -> Result<(), Error> {
 
     let new_vote: VotingOption = ctx.parameter_cursor().get()?;
 
-    let voting_index = match host.state().options.iter().position(|o| *o == new_vote) {
+    let new_vote_index = match host.state().options.iter().position(|o| *o == new_vote) {
         Some(position) => position as u32,
         None => return Err(Error::InvalidVotingOption),
     };
+
+    host.state_mut().ballots.entry(acc)
+        .and_modify(|old_vote| *old_vote = new_vote_index)
+        .or_insert(new_vote_index);
 
     Ok(())
 }
