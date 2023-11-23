@@ -28,7 +28,7 @@ fn init(ctx: &InitContext, _state_builder: &mut StateBuilder) -> InitResult<Stat
     
     let parameter: InitParameter = ctx.parameter_cursor().get()?;
 
-    let state: State = State {
+    let state = State {
         description: parameter.description,
         options:parameter.options,
         end_time: parameter.end_time,
