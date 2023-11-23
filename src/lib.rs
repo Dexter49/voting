@@ -64,7 +64,7 @@ fn vote(ctx: &ReceiveContext, host: &mut Host<State>) -> Result<(), Error> {
     }
 
     let acc: AccountAddress = match ctx.sender() {
-        Address::Account(acc: AccountAddress) => acc,
+        Address::Account(acc,) => acc,
         Address::Contract(_) => return Err(Error::ContractVoter),
     };
 
