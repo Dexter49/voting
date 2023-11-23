@@ -4,6 +4,7 @@ use core::fmt::Debug;
 
 type VotingOption = String;
 type VotingIndex = u32;
+type VotingCount = u32;
 
 /// Your smart contract state.
 #[derive(Serialize, SchemaType)]
@@ -81,8 +82,23 @@ fn vote(ctx: &ReceiveContext, host: &mut Host<State>) -> Result<(), Error> {
     Ok(())
 }
 
+#[derive(Serialize, SchemaType)]
+pub struct ViewData {
+    tally: BTreeMap<VotingOption, VotingCount>
+}
+
 /// View function that returns the content of the state.
-#[receive(contract = "voting", name = "view", return_value = "State")]
-fn view<'b>(_ctx: &ReceiveContext, host: &'b Host<State>) -> ReceiveResult<&'b State> {
-    Ok(host.state())
+#[receive(contract = "voting", name = "view", return_value = "ViewData")]
+fn view(_ctx: &ReceiveContext, host: &Host<State>) -> ReceiveResult<ViewData> {
+    let mut tally = BTreeMap::new();
+
+    for (acc, voting_index) in host.state().ballots.iter() {
+        let voting_option: VotingOption = host.state.options[*voting_index as usize].clone();
+
+        tally.entry(voting_option)
+        .and_modify(|current_count| *current_count += 1)
+        .or_insert(1);
+    }
+    
+    Ok(ViewData { tally })
 }
