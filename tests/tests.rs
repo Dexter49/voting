@@ -11,9 +11,6 @@ const BOB_ADDR: Address = Address::Account(BOB);
 const CARLY: AccountAddress = AccountAddress([2u8; 32]);
 const CARLY_ADDR: Address = Address::Account(CARLY);
 
-const DAN: AccountAddress = AccountAddress([3u8; 32]);
-const DAN_ADDR: Address = Address::Account(DAN);
-
 /// The initial balance of the ALICE test account.
 const ACC_INITIAL_BALANCE: Amount = Amount::from_ccd(10_000);
 
@@ -76,6 +73,19 @@ fn test_voting() {
         },
     ).unwrap();
 
+    let update_3 = chain.contract_update(
+        SIGNER, 
+        CARLY, 
+        CARLY_ADDR, 
+        Energy::from(10000), 
+        UpdateContractPayload {
+            amount: Amount::zero(),
+            address: init.contract_address,
+            receive_name: OwnedReceiveName::new_unchecked("voting.vote".to_string()),
+            message: OwnedParameter::from_serial(&"SE".to_string()).unwrap(),
+        },
+    ).unwrap();
+
     let view = chain.contract_invoke(
         BOB, 
         BOB_ADDR, 
@@ -88,7 +98,8 @@ fn test_voting() {
         },
     ).unwrap();
 
+
     let view_data: ViewData = view.parse_return_value().unwrap();
-    assert_eq!(view_data == ["DK": 1, "IT": 1, "SE": 1]);
+    assert_eq!(view_data == ["IT": 1], ["SE": 1], ["DK": 1],);
 
 }
